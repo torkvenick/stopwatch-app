@@ -13,18 +13,14 @@ export class AppComponent {
   State = State;
   state: State = State.isStopped;
   
-  time = '00:00:00';
   seconds: number = 0;
   intervalRef: any;
   
   laps: number[] = [];
   userLaps: string[] = [];
 
-  get minutes() {
-    return this.checkTime(Math.floor(this.seconds / 60 % 60));
-  }
-  get hours() {
-    return this.checkTime(Math.floor(this.seconds / 3600));
+  get time () {
+      return this.secondsToDisplayedTime(this.seconds); 
   }
   //#endregion
   
@@ -33,6 +29,7 @@ export class AppComponent {
   //#endregion
   
   //#region functions
+    
   checkTime(timeValue: number) {
     if (timeValue < 10) {
       return '0' + timeValue;
@@ -43,23 +40,20 @@ export class AppComponent {
   
   setCounter = () => {
     this.seconds++;
-    const convertedSeconds = this.stopRaising(this.seconds);
-    const displayedSeconds = this.checkTime(convertedSeconds);
-
-    this.time = this.hours + ':' + this.minutes + ':' + displayedSeconds;
+    const returnedSeconds = this.secondsToDisplayedTime(this.seconds);
   }
-
+  
   stopRaising(timeValue: number) {
     return timeValue % 60;
   }
-
+  
   onStartCounter() {
     if (this.intervalRef) {
       return;
     }
-    this.intervalRef = setInterval(this.setCounter, 0);
+    this.intervalRef = setInterval(this.setCounter, 10);
   }
-
+  
   onPauseCounter() {
     clearInterval(this.intervalRef);
     this.intervalRef = undefined;
@@ -83,34 +77,28 @@ export class AppComponent {
     if(action === Actions.stop) {
       this.state = this.State.isStopped;
       this.seconds = 0;
-      this.time = '00:00:00';
       this.onPauseCounter();
     }
   }
-
-  userTime = (currentLap: number, lastLap: number) => {
-    let lapHours = this.checkTime(Math.floor(currentLap / 3600));
-    let lapMinutes = this.checkTime(Math.floor(currentLap / 60 % 60));
-
-    let convertedLap = this.stopRaising(lastLap);
-    let displayedLap = this.checkTime(convertedLap);
-
-    let displayedTime = lapHours + ':' + lapMinutes + ':' + displayedLap;
-    return displayedTime;
+  // returns 00:00:00
+  secondsToDisplayedTime(seconds: number) {
+    const displayedHours = this.checkTime(Math.floor(seconds / 3600));
+    const displayedMinutes = this.checkTime(Math.floor(seconds / 60 % 60));
+    const convertedSeconds = this.stopRaising(seconds);
+    const displayedSeconds = this.checkTime(convertedSeconds);
+    const time = displayedHours + ':' + displayedMinutes + ':' + displayedSeconds;
+    return time;
   }
-
+  
   lapSnap() {
     if (this.laps.length < 1) {
       this.laps.push(this.seconds);
-      this.userLaps.push(this.userTime(this.seconds, this.seconds));
-      return;
+      return this.userLaps.push(this.secondsToDisplayedTime(this.seconds));  
     } 
       let sumOfLaps = (previousValue: number, currentValue: number) => previousValue + currentValue;
       let currentLap = this.seconds - this.laps.reduce(sumOfLaps);
       this.laps.push(currentLap);
-
-      let lastLap = this.laps[this.laps.length - 1];
-      this.userLaps.push(this.userTime(currentLap,lastLap));
+      return this.userLaps.push(this.secondsToDisplayedTime(currentLap));
   }
   //#endregion
 }
