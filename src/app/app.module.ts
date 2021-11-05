@@ -1,5 +1,4 @@
 import { StorageService } from './../services/storage.service';
-import { BackgroundService } from './../services/background.service';
 import { ControlService } from './../services/control.service';
 import { ButtonService } from './../services/buttons.service';
 import { NgModule } from '@angular/core';
@@ -16,7 +15,6 @@ import { AppComponent } from './app.component';
   ],
   providers: [ButtonService,
               ControlService,
-              BackgroundService,
               StorageService],
   bootstrap: [AppComponent]
 })

@@ -1,5 +1,4 @@
 import { ControlService } from './../services/control.service';
-import { BackgroundService } from './../services/background.service';
 import { ButtonService } from './../services/buttons.service';
 import { Actions, State } from './state.model';
 import { Component } from '@angular/core';
@@ -37,22 +36,12 @@ export class AppComponent {
   
   //#region lifecycle hooks
   constructor(private buttonService: ButtonService,
-              private controlService: ControlService,
-              private backgroundService: BackgroundService) {}
+              private controlService: ControlService) {}
   //#endregion
               
   //#region functions  
-  switchAction(action: Actions) {
-    /* if(action === 1) {
-      let currentTime = new Date();
-      let testTime = currentTime.toLocaleTimeString();
-      console.log(testTime);
-    }  */
-    return this.controlService.switchAction(action);
-  }
-  storeState(state: State) {
-    console.log(state);
-    this.backgroundService.storeState(state);
+  switchAction(action: Actions, state: State) {
+    return this.controlService.switchAction(action, state);
   }
  
   addLap() {

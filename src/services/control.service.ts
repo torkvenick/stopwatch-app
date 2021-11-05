@@ -1,7 +1,9 @@
-import { BackgroundService } from './background.service';
+import { StorageService } from './storage.service';
+import { Injectable } from '@angular/core';
 import { Actions, State } from './../app/state.model';
 
 
+@Injectable()
 export class ControlService {
   
   private seconds: number = 0;
@@ -23,6 +25,15 @@ export class ControlService {
   }
   passState() {
     return this.state;
+  }
+
+  constructor(private storageSrevice: StorageService) {
+    this.state = this.storageSrevice.toData();
+    if (this.state === 2) {
+      this.onStartCounter();
+    } else {
+      this.state = State.isStopped;
+    }
   }
 
   // PRETIFY DISPLAYED TIME
@@ -56,12 +67,12 @@ export class ControlService {
   }
 
   // BUTTONS SWITCH CONTROLS
-  switchAction(action: Actions) {
+  switchAction(action: Actions, state: State) {
     //do switch (best with default)
+    this.storeState(state);
     switch (action) {
       case Actions.start:
         this.state = State.isRunning;
-        console.log(this.state);
         this.onStartCounter();
         this.laps = [];
         break;
@@ -73,13 +84,13 @@ export class ControlService {
             this.state = State.isRunning;
             this.onStartCounter();
             break;
-      case Actions.stop:
-        this.state = State.isStopped;
-        this.seconds = 0;
-        this.onPauseCounter();
-        break;
-      default:
-        this.state = State.isStopped;
+            case Actions.stop:
+              this.state = State.isStopped;
+              this.seconds = 0;
+              this.onPauseCounter();
+              break;
+              default:
+                this.state = State.isStopped;
         this.seconds = 0;
         this.laps = [];
         break;
@@ -93,5 +104,10 @@ export class ControlService {
     let sumOfLaps = (previousValue: number, currentValue: number) => previousValue + currentValue;
     let currentLap = this.seconds - this.laps.reduce(sumOfLaps);
     return this.laps.push(currentLap);
+  }
+
+  // STORE STATES
+  storeState(state: State) {
+    this.storageSrevice.toStorage(state);
   }
 }
