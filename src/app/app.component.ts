@@ -14,14 +14,14 @@ export class AppComponent {
   State = State;
   Actions = Actions;
 
-  get seconds () {
+  get seconds() {
     return this.controlService.passSeconds();
   }
-  get time () {
+  get time() {
     return this.controlService.time();
   }
-  
-  get laps () {
+
+  get laps() {
     return this.controlService.passLaps();
   }
 
@@ -29,27 +29,36 @@ export class AppComponent {
     return this.controlService.passState();
   }
 
-  btnTitle (action: Actions) {
+  btnTitle(action: Actions) {
     return this.buttonService.buttonTitles(action);
-  } 
+  }
   //#endregion
-  
+
   //#region lifecycle hooks
   constructor(private buttonService: ButtonService,
-              private controlService: ControlService) {}
+    private controlService: ControlService) { }
   //#endregion
-              
+
   //#region functions  
   switchAction(action: Actions, state: State) {
     return this.controlService.switchAction(action, state);
   }
- 
+
   addLap() {
     return this.controlService.addLap();
   }
 
-  displayLap(lap:number) {
+  displayLap(lap: number) {
     return this.controlService.secondsToDisplayedTime(lap);
   }
   //#endregion
+
+  
+  test() {
+    return this.time + typeof this. time;
+   /*  setTimeout(() => {
+      let newTime = new Date(this.time);
+      return newTime.toLocaleTimeString();
+    }, 5000) */
+  }
 }
