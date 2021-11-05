@@ -1,4 +1,7 @@
-import { State, Actions } from './state.model';
+import { ControlService } from './../services/control.service';
+import { BackgroundService } from './../services/background.service';
+import { ButtonService } from './../services/buttons.service';
+import { Actions, State } from './state.model';
 import { Component } from '@angular/core';
 
 @Component({
@@ -9,148 +12,55 @@ import { Component } from '@angular/core';
 export class AppComponent {
 
   //#region variables
-  Actions = Actions;
   State = State;
-  state: State = State.isStopped;
-  
-  seconds: number = 0;
-  intervalRef: any;
-  
-  laps: number[] = [];
-  userLaps: string[] = [];
+  Actions = Actions;
 
-  get time () {
-      return this.secondsToDisplayedTime(this.seconds); 
+  get seconds () {
+    return this.controlService.passSeconds();
   }
+  get time () {
+    return this.controlService.time();
+  }
+  
+  get laps () {
+    return this.controlService.passLaps();
+  }
+
+  get state() {
+    return this.controlService.passState();
+  }
+
+  btnTitle (action: Actions) {
+    return this.buttonService.buttonTitles(action);
+  } 
   //#endregion
   
   //#region lifecycle hooks
-  constructor() { }
+  constructor(private buttonService: ButtonService,
+              private controlService: ControlService,
+              private backgroundService: BackgroundService) {}
   //#endregion
-  
-  //#region functions
-    
-  checkTime(timeValue: number) {
-    if (timeValue < 10) {
-      return '0' + timeValue;
-    } else {
-      return timeValue;
-    }
+              
+  //#region functions  
+  switchAction(action: Actions) {
+    /* if(action === 1) {
+      let currentTime = new Date();
+      let testTime = currentTime.toLocaleTimeString();
+      console.log(testTime);
+    }  */
+    return this.controlService.switchAction(action);
   }
-  
-  setCounter = () => {
-    this.seconds++;
-    const returnedSeconds = this.secondsToDisplayedTime(this.seconds);
+  storeState(state: State) {
+    console.log(state);
+    this.backgroundService.storeState(state);
   }
-  
-  stopRaising(timeValue: number) {
-    return timeValue % 60;
-  }
-  
-  onStartCounter() {
-    if (this.intervalRef) {
-      return;
-    }
-    this.intervalRef = setInterval(this.setCounter, 10);
-  }
-  
-  onPauseCounter() {
-    clearInterval(this.intervalRef);
-    this.intervalRef = undefined;
+ 
+  addLap() {
+    return this.controlService.addLap();
   }
 
-  switchAction(action: Actions) {
-    if(action === Actions.start) {
-      this.state = this.State.isRunning;
-      this.onStartCounter();
-      this.laps = [];
-      this.userLaps = [];
-    }
-    if (action === Actions.pause) {
-      this.state = this.State.isPaused;
-      this.onPauseCounter();
-    }
-    if(action === Actions.resume) {
-      this.state = this.State.isRunning;
-      this.onStartCounter();
-    }
-    if(action === Actions.stop) {
-      this.state = this.State.isStopped;
-      this.seconds = 0;
-      this.onPauseCounter();
-    }
-  }
-  // returns 00:00:00
-  secondsToDisplayedTime(seconds: number) {
-    const displayedHours = this.checkTime(Math.floor(seconds / 3600));
-    const displayedMinutes = this.checkTime(Math.floor(seconds / 60 % 60));
-    const convertedSeconds = this.stopRaising(seconds);
-    const displayedSeconds = this.checkTime(convertedSeconds);
-    const time = displayedHours + ':' + displayedMinutes + ':' + displayedSeconds;
-    return time;
-  }
-  
-  lapSnap() {
-    if (this.laps.length < 1) {
-      this.laps.push(this.seconds);
-      return this.userLaps.push(this.secondsToDisplayedTime(this.seconds));  
-    } 
-      let sumOfLaps = (previousValue: number, currentValue: number) => previousValue + currentValue;
-      let currentLap = this.seconds - this.laps.reduce(sumOfLaps);
-      this.laps.push(currentLap);
-      return this.userLaps.push(this.secondsToDisplayedTime(currentLap));
+  displayLap(lap:number) {
+    return this.controlService.secondsToDisplayedTime(lap);
   }
   //#endregion
 }
-
-  //timer
-  /* public displayTimer: any;
-  public isRunning: boolean = false;
-  public startText = 'Start';
-  public time: any;
-  
-  ngOnInit(): void {
-    this.time = 0;
-  }
-  
-  toggleTimer() {
-    this.isRunning = !this.isRunning;
-    this.stopwatch();
-  }
-  
-  stopwatch() {
-    timer(0, 1000).subscribe(() => {
-      if (this.isRunning) {
-        this.time++;
-        this.getDisplayTimer(this.time);
-        this.startText = 'Pause';
-      } else {
-        this.startText = 'Start';
-      }
-    });
-  }
-  
-  getDisplayTimer(time: number) {
-    var hours = '' + Math.floor(time / 3600);
-    var minutes = '' + Math.floor(time % 3600 / 60);
-    var seconds = '' + Math.floor(time % 3600 % 60);
-  
-    if (Number(hours) < 10) {
-      hours = '0' + hours;
-    } else {
-      hours = '' + hours;
-    }
-    if (Number(minutes) < 10) {
-      minutes = '0' + minutes;
-    } else {
-      minutes = '' + minutes;
-    }
-    if (Number(seconds) < 10) {
-      seconds = '0' + seconds;
-    } else {
-      seconds = '' + seconds;
-    }
-  
-    this.displayTimer = hours + ':' + minutes + ':' + seconds;
-  } */
-

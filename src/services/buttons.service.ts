@@ -1,6 +1,6 @@
 import { Actions } from './../app/state.model';
 
-export class ButtonServices {
+export class ButtonService {
 
   private swButtons: Map<Actions, string> = new Map([
     [Actions.start, 'start'],
@@ -11,10 +11,6 @@ export class ButtonServices {
 
   buttonTitles(action: Actions) {
     return this.swButtons.get(action);
-  }
-  
-  allButtons() {
-    return Array.from(this.swButtons.keys());
   }
 }
 

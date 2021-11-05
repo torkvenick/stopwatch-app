@@ -1,6 +1,5 @@
 <div class="container">
   <h1 class="main-title">Welcome to <span>stopwatch</span></h1>
-  <div class="wrapper">
 
     <section class="stopwatch">
       <div class="stopwatch__screen">{{ time }}</div>
@@ -9,65 +8,40 @@
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
                   (click)='switchAction(Actions.start)' 
-                  *ngIf="state === State.isStopped">Start</button>
+                  *ngIf="state === State.isStopped">{{btnTitle(Actions.start)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
                   (click)='switchAction(Actions.pause)' 
-                  *ngIf="state === State.isRunning">Pause</button>
+                  *ngIf="state === State.isRunning">{{btnTitle(Actions.pause)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.resume)' 
-                  *ngIf="state === State.isPaused">Resume</button>
+                  (click)='switchAction(Actions.resume)'
+                  *ngIf="state === State.isPaused">{{btnTitle(Actions.resume)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.stop)'>Stop</button>
+                  (click)='switchAction(Actions.stop)'>{{btnTitle(Actions.stop)}}</button>
         </li>
         <li>
-          <button class="stopwatch__control stopwatch__control--lap" (click)="lapSnap()">Lap</button>
+          <button class="stopwatch__control stopwatch__control--lap" 
+                  (click)="addLap()"
+                  *ngIf="state !== State.isStopped">Lap</button>
         </li>
       </ul>
-      <ul class="stopwatch__laps">
+        <ul class="stopwatch__laps">
         <li class="stopwatch__lap"
-            *ngFor="let lap of userLaps">
-          <p>{{ lap }}</p>
-        </li>
-      </ul>
+        *ngFor="let lap of laps">
+        <p>{{ displayLap(lap) }}</p>
+      </li>
+    </ul>
     </section>
-
-    
-  </div>
 </div>
 
-<!-- 1. ButtoonTitle dynamic
-    2. Services-->
-
-<!-- <section class="stopwatch">
-  <div class="stopwatch__screen" *ngIf="displayTimer; else elseBlock"> {{displayTimer}} </div>
-  <ng-template #elseBlock> 00:00:00 </ng-template>
-</section>
-<ul class="stopwatch__controls">
-  <li>
-    <button class="stopwatch__control stopwatch__control--start" type="button" *ngIf="started"
-      (click)='toggleTimer()'>{{ startText }}</button>
-  </li>
-</ul> -->
-
-<!--   <li *ngFor="let button of btnStates">
-        <button class="stopwatch__control stopwatch__control--pause" 
-                type="button"
-                (click)="changeState(button)">{{ button }}</button>
-      </li> -->
-<!--  <button class="stopwatch__control stopwatch__control--start" 
-              type="button"
-              (click)='changeState()'
-              >Start</button>
-      <button class="stopwatch__control stopwatch__control--resume" 
-              type="button">Resume</button>
-      <button class="stopwatch__control stopwatch__control--stop" 
-              type="button">Stop</button> -->
+<!-- 1. ButtonTitle dynamic <-- done
+    2. Services <-- DONE
+    3. Start the stopwatch, then close the browser, then open it and see an awfull thing: it's still going. HOW? I need 2 parts for this feature: a local storage and the other is find a way to store the reference in time (dateObject in javascript - google). It's not about lifecycle hooks. More about constructor of service-->
