@@ -1,12 +1,14 @@
 import { State } from './../app/state.model';
 
+//type StorageKeys = 'storedStartTime' | 'storedPauseTime' | '...';
+
 export class StorageService {
     
   storedState: string = 'storedState';
   
-  toStorage(state: State) {
-    const storedState: string = JSON.stringify(state);
-    localStorage.setItem(this.storedState, storedState);
+  toStorage(state: State, localTime: number) {
+    const storedStateAndLocalTime: string = JSON.stringify({state, localTime});
+    localStorage.setItem(this.storedState, storedStateAndLocalTime);
   }
 
   toData() {
@@ -16,5 +18,13 @@ export class StorageService {
     }
     const result = JSON.parse(savedState);
     return result;
+  }
+
+  storedStartTime: string = 'storedStartTime';
+  storedPauseTime: string = 'storedPauseTime';
+  storedResumeTime: string = 'storedResumeTime';
+  storedRefreshPageTime: string = 'storedRefreshPageTime';
+
+  timeToStorage(time: number) {
   }
 }

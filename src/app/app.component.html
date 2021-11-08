@@ -1,5 +1,4 @@
 <div class="container">
-  {{ test() }}
   <h1 class="main-title">Welcome to <span>stopwatch</span></h1>
 
     <section class="stopwatch">
@@ -8,25 +7,25 @@
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.start, State.isRunning)' 
+                  (click)='switchAction(Actions.start, State.isRunning, localTime)' 
                   *ngIf="state === State.isStopped">{{btnTitle(Actions.start)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.pause, State.isPaused)' 
+                  (click)='switchAction(Actions.pause, State.isPaused, localTime)' 
                   *ngIf="state === State.isRunning">{{btnTitle(Actions.pause)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.resume, State.isRunning)'
+                  (click)='switchAction(Actions.resume, State.isRunning, localTime)'
                   *ngIf="state === State.isPaused">{{btnTitle(Actions.resume)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.stop, State.isStopped)'>{{btnTitle(Actions.stop)}}</button>
+                  (click)='switchAction(Actions.stop, State.isStopped, localTime)'>{{btnTitle(Actions.stop)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--lap" 

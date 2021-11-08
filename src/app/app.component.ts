@@ -21,6 +21,10 @@ export class AppComponent {
     return this.controlService.time();
   }
 
+  get localTime() {
+    return new Date().getTime();
+  }
+
   get laps() {
     return this.controlService.passLaps();
   }
@@ -40,8 +44,8 @@ export class AppComponent {
   //#endregion
 
   //#region functions  
-  switchAction(action: Actions, state: State) {
-    return this.controlService.switchAction(action, state);
+  switchAction(action: Actions, state: State, localTime: number) {
+    return this.controlService.switchAction(action, state, localTime);
   }
 
   addLap() {
@@ -52,13 +56,4 @@ export class AppComponent {
     return this.controlService.secondsToDisplayedTime(lap);
   }
   //#endregion
-
-  
-  test() {
-    return this.time + typeof this. time;
-   /*  setTimeout(() => {
-      let newTime = new Date(this.time);
-      return newTime.toLocaleTimeString();
-    }, 5000) */
-  }
 }

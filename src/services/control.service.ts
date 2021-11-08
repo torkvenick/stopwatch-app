@@ -28,8 +28,9 @@ export class ControlService {
   }
 
   constructor(private storageSrevice: StorageService) {
-    this.state = this.storageSrevice.toData();
-    if (this.state === 2) {
+    const storedStateAndLocalTime = this.storageSrevice.toData();
+    if (storedStateAndLocalTime.state === 2) {
+      this.state = storedStateAndLocalTime.state;
       this.onStartCounter();
     } else {
       this.state = State.isStopped;
@@ -67,9 +68,9 @@ export class ControlService {
   }
 
   // BUTTONS SWITCH CONTROLS
-  switchAction(action: Actions, state: State) {
+  switchAction(action: Actions, state: State, localTime: number) {
     //do switch (best with default)
-    this.storeState(state);
+    this.storeStateAndTime(state, localTime);
     switch (action) {
       case Actions.start:
         this.state = State.isRunning;
@@ -91,9 +92,9 @@ export class ControlService {
               break;
               default:
                 this.state = State.isStopped;
-        this.seconds = 0;
-        this.laps = [];
-        break;
+                this.seconds = 0;
+                this.laps = [];
+              break;
     }
   }
   // ADD LAPS
@@ -107,7 +108,7 @@ export class ControlService {
   }
 
   // STORE STATES
-  storeState(state: State) {
-    this.storageSrevice.toStorage(state);
+  storeStateAndTime(state: State, localTime: number) {
+    this.storageSrevice.toStorage(state, localTime);
   }
 }
