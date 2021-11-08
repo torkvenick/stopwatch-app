@@ -27,14 +27,22 @@ export class ControlService {
     return this.state;
   }
 
-  constructor(private storageSrevice: StorageService) {
-    const storedStateAndLocalTime = this.storageSrevice.toData();
-    if (storedStateAndLocalTime.state === 2) {
-      this.state = storedStateAndLocalTime.state;
+  constructor(private storageService: StorageService) {
+     const storedState: State = this.storageService.stateToData();    
+    if (storedState === State.isRunning) {
+      const currentLocalTime: number = new Date().getTime();
+      const storedLocalTime: number = this.storageService.timeToData();
+      const pauseLocalTime: number = this.storageService.pauseTimeToData();
+      const neededTime = (currentLocalTime - storedLocalTime) / 1000 + pauseLocalTime;
+      this.seconds = neededTime;
+      this.state = State.isRunning;
       this.onStartCounter();
+    } else if (storedState === State.isPaused) {
+      this.seconds = this.storageService.pauseTimeToData();
+      this.state = State.isPaused;
     } else {
-      this.state = State.isStopped;
-    }
+      return;
+    } 
   }
 
   // PRETIFY DISPLAYED TIME
@@ -70,25 +78,29 @@ export class ControlService {
   // BUTTONS SWITCH CONTROLS
   switchAction(action: Actions, state: State, localTime: number) {
     //do switch (best with default)
-    this.storeStateAndTime(state, localTime);
+    this.storeState(state);
     switch (action) {
       case Actions.start:
         this.state = State.isRunning;
         this.onStartCounter();
+        this.storeLocalTime(localTime);
         this.laps = [];
         break;
         case Actions.pause:
           this.state = State.isPaused;
           this.onPauseCounter();
+          this.storePauseTime(this.seconds);
           break;
           case Actions.resume:
             this.state = State.isRunning;
             this.onStartCounter();
+            this.storeLocalTime(localTime);
             break;
             case Actions.stop:
               this.state = State.isStopped;
               this.seconds = 0;
               this.onPauseCounter();
+              this.storageService.clearStorage();
               break;
               default:
                 this.state = State.isStopped;
@@ -108,7 +120,13 @@ export class ControlService {
   }
 
   // STORE STATES
-  storeStateAndTime(state: State, localTime: number) {
-    this.storageSrevice.toStorage(state, localTime);
+  storeState(state: State) {
+    this.storageService.stateToStorage(state);
+  }
+  storeLocalTime(localTime: number) {
+    this.storageService.timeToStorage(localTime);
+  }
+  storePauseTime(pauseTime: number) {
+    this.storageService.pauseTimeToStorage(pauseTime);
   }
 }

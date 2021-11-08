@@ -3,15 +3,18 @@ import { State } from './../app/state.model';
 //type StorageKeys = 'storedStartTime' | 'storedPauseTime' | '...';
 
 export class StorageService {
-    
-  storedState: string = 'storedState';
   
-  toStorage(state: State, localTime: number) {
-    const storedStateAndLocalTime: string = JSON.stringify({state, localTime});
-    localStorage.setItem(this.storedState, storedStateAndLocalTime);
+  storedState: string = 'storedState';
+  storedLocalTime: string = 'storedLocalTime';
+  storedPauseLocalTime: string = 'storedPauseLocalTime';
+
+  
+  stateToStorage(state: State) {
+    const storedState: string = JSON.stringify(state);
+    localStorage.setItem(this.storedState, storedState);
   }
 
-  toData() {
+  stateToData() {
     const savedState = localStorage.getItem(this.storedState);
     if (savedState === null) {
       return null;
@@ -20,11 +23,81 @@ export class StorageService {
     return result;
   }
 
-  storedStartTime: string = 'storedStartTime';
-  storedPauseTime: string = 'storedPauseTime';
-  storedResumeTime: string = 'storedResumeTime';
-  storedRefreshPageTime: string = 'storedRefreshPageTime';
 
-  timeToStorage(time: number) {
+  timeToStorage(localTime: number) {
+    const receivedTime: string = JSON.stringify(localTime);
+    localStorage.setItem(this.storedLocalTime, receivedTime);
   }
+  timeToData() {
+    const savedLocalTime = localStorage.getItem(this.storedLocalTime);
+    if (savedLocalTime === null) {
+      return null;
+    }
+    const result = JSON.parse(savedLocalTime);
+    return result;
+  }
+  clearStorage() {
+    localStorage.removeItem(this.storedState);
+    localStorage.removeItem(this.storedLocalTime);
+    localStorage.removeItem(this.storedPauseLocalTime);
+  }
+
+  pauseTimeToStorage(pauseTime: number) {
+    const pausedTime: string = JSON.stringify(pauseTime);
+    localStorage.setItem(this.storedPauseLocalTime, pausedTime);
+  }
+
+  pauseTimeToData() {
+    const pauseTime = localStorage.getItem(this.storedPauseLocalTime);
+    if (pauseTime === null) {
+      return null;
+    }
+    const result = JSON.parse(pauseTime);
+    return result;
+  }
+  //====================================================
+
+ /*  startLocalTimeToStorage(time: number) {
+    const storedStartLocalTime: string = JSON.stringify(time);
+    localStorage.setItem(this.storedStartLocalTime, storedStartLocalTime);
+  }
+
+  startLocalTimeToData() {
+    const savedStartLocalTime = localStorage.getItem(this.storedState);
+    if (savedStartLocalTime === null) {
+      return null;
+    }
+    const result = JSON.parse(savedStartLocalTime);
+    return result;
+  }
+  //====================================================
+
+  pauseLocalTimeToStorage(time: number) {
+    const storedPauseLocalTime: string = JSON.stringify(time);
+    localStorage.setItem(this.storedPauseLocalTime, storedPauseLocalTime);
+  }
+
+  pauseLocalTimeToData() {
+    const savedPauseLocalTime = localStorage.getItem(this.storedState);
+    if (savedPauseLocalTime === null) {
+      return null;
+    }
+    const result = JSON.parse(savedPauseLocalTime);
+    return result;
+  }
+  //====================================================
+
+  resumeLocalTimeToStorage(time: number) {
+    const storedResumeLocalTime: string = JSON.stringify(time);
+    localStorage.setItem(this.storedResumeLocalTime, storedResumeLocalTime);
+  }
+
+  resumeLocalTimeToData() {
+    const savedResumeLocalTime = localStorage.getItem(this.storedState);
+    if (savedResumeLocalTime === null) {
+      return null;
+    }
+    const result = JSON.parse(savedResumeLocalTime);
+    return result;
+  } */
 }
