@@ -7,25 +7,25 @@
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.start, State.isRunning, localTime)' 
+                  (click)='switchAction(Actions.start, localTime)' 
                   *ngIf="state === State.isStopped">{{btnTitle(Actions.start)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.pause, State.isPaused, localTime)' 
+                  (click)='switchAction(Actions.pause, localTime)' 
                   *ngIf="state === State.isRunning">{{btnTitle(Actions.pause)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.resume, State.isRunning, localTime)'
+                  (click)='switchAction(Actions.resume, localTime)'
                   *ngIf="state === State.isPaused">{{btnTitle(Actions.resume)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--start" 
                   type="button" 
-                  (click)='switchAction(Actions.stop, State.isStopped, localTime)'>{{btnTitle(Actions.stop)}}</button>
+                  (click)='switchAction(Actions.stop, localTime)'>{{btnTitle(Actions.stop)}}</button>
         </li>
         <li>
           <button class="stopwatch__control stopwatch__control--lap" 

@@ -5,11 +5,10 @@ import { Actions, State } from './../app/state.model';
 
 @Injectable()
 export class ControlService {
-  
+
   private seconds: number = 0;
   private intervalRef: any;
   private state: State = State.isStopped;
-
 
   private laps: number[] = [];
 
@@ -28,13 +27,27 @@ export class ControlService {
   }
 
   constructor(private storageSrevice: StorageService) {
-    const storedStateAndLocalTime = this.storageSrevice.toData();
-    if (storedStateAndLocalTime.state === 2) {
+    const test1 = this.storageSrevice.startLocalTimetoData();
+    const test2 = this.storageSrevice.pauseLocalTimetoData();
+    const test3 = this.storageSrevice.resumeLocalTimetoData();
+    const test4 = this.storageSrevice.stopLocalTimetoData();
+    let test5 = this.storageSrevice.storedActionToData();
+
+    
+    console.log(test1);
+    console.log(test2);
+    console.log(test3);
+    console.log(test4);
+
+    
+
+
+    /* if (storedStateAndLocalTime === 2) {
       this.state = storedStateAndLocalTime.state;
       this.onStartCounter();
     } else {
       this.state = State.isStopped;
-    }
+    } */
   }
 
   // PRETIFY DISPLAYED TIME
@@ -68,33 +81,33 @@ export class ControlService {
   }
 
   // BUTTONS SWITCH CONTROLS
-  switchAction(action: Actions, state: State, localTime: number) {
+  switchAction(action: Actions, localTime: number) {
     //do switch (best with default)
-    this.storeStateAndTime(state, localTime);
+    this.storeActionAndTime(action, localTime);
     switch (action) {
       case Actions.start:
         this.state = State.isRunning;
         this.onStartCounter();
         this.laps = [];
         break;
-        case Actions.pause:
-          this.state = State.isPaused;
-          this.onPauseCounter();
-          break;
-          case Actions.resume:
-            this.state = State.isRunning;
-            this.onStartCounter();
-            break;
-            case Actions.stop:
-              this.state = State.isStopped;
-              this.seconds = 0;
-              this.onPauseCounter();
-              break;
-              default:
-                this.state = State.isStopped;
-                this.seconds = 0;
-                this.laps = [];
-              break;
+      case Actions.pause:
+        this.state = State.isPaused;
+        this.onPauseCounter();
+        break;
+      case Actions.resume:
+        this.state = State.isRunning;
+        this.onStartCounter();
+        break;
+      case Actions.stop:
+        this.state = State.isStopped;
+        this.seconds = 0;
+        this.onPauseCounter();
+        break;
+      default:
+        this.state = State.isStopped;
+        this.seconds = 0;
+        this.laps = [];
+        break;
     }
   }
   // ADD LAPS
@@ -108,7 +121,7 @@ export class ControlService {
   }
 
   // STORE STATES
-  storeStateAndTime(state: State, localTime: number) {
-    this.storageSrevice.toStorage(state, localTime);
+  storeActionAndTime(action: Actions, localTime: number) {
+    this.storageSrevice.toStorage(action, localTime);
   }
 }

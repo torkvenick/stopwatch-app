@@ -44,8 +44,8 @@ export class AppComponent {
   //#endregion
 
   //#region functions  
-  switchAction(action: Actions, state: State, localTime: number) {
-    return this.controlService.switchAction(action, state, localTime);
+  switchAction(action: Actions,localTime: number) {
+    this.controlService.switchAction(action, localTime);
   }
 
   addLap() {
