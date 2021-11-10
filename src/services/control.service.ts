@@ -5,8 +5,10 @@ import { Actions, State } from './../app/state.model';
 
 @Injectable()
 export class ControlService {
-  
-  private seconds: number = 0;
+
+  private timeRef: number = 0;
+  // timRef gets the moment of the start of my stopwatch. I need to convert this time into seconds. I need to create a method which converts time to seconds since the time is passed to other methods or whatever...
+  // 
   private intervalRef: any;
   private state: State = State.isStopped;
 
@@ -14,11 +16,11 @@ export class ControlService {
   private laps: number[] = [];
 
   time() {
-    return this.secondsToDisplayedTime(this.seconds);
+    return this.secondsToDisplayedTime(this.timeRef);
   }
 
   passSeconds() {
-    return this.seconds;
+    return this.timeRef;
   }
   passLaps() {
     return this.laps;
@@ -28,21 +30,24 @@ export class ControlService {
   }
 
   constructor(private storageService: StorageService) {
-     const storedState: State = this.storageService.stateToData();    
+
+    const storedState: State = this.storageService.stateToData();
+    const storedLaps: number[] = this.storageService.lapsToData();
+    this.laps = storedLaps;
     if (storedState === State.isRunning) {
       const currentLocalTime: number = new Date().getTime();
       const storedLocalTime: number = this.storageService.timeToData();
       const pauseLocalTime: number = this.storageService.pauseTimeToData();
       const neededTime = (currentLocalTime - storedLocalTime) / 1000 + pauseLocalTime;
-      this.seconds = neededTime;
+      this.timeRef = neededTime;
       this.state = State.isRunning;
       this.onStartCounter();
     } else if (storedState === State.isPaused) {
-      this.seconds = this.storageService.pauseTimeToData();
+      this.timeRef = this.storageService.pauseTimeToData();
       this.state = State.isPaused;
     } else {
       return;
-    } 
+    }
   }
 
   // PRETIFY DISPLAYED TIME
@@ -62,12 +67,17 @@ export class ControlService {
     }
   }
 
+  startLocalTime!: number;
   // COUNTER CONTROLS
   onStartCounter() {
     if (this.intervalRef) {
       return;
-    }
-    this.intervalRef = setInterval(() => this.seconds++, 1000);
+    }  
+      this.startLocalTime = new Date().getTime();
+    this.intervalRef = setInterval(() => {
+      const currentLocalTime = new Date().getTime();
+      return this.timeRef = Math.floor((currentLocalTime - this.startLocalTime) / 1000);
+    }, 1000);
   }
 
   onPauseCounter() {
@@ -81,42 +91,46 @@ export class ControlService {
     this.storeState(state);
     switch (action) {
       case Actions.start:
-        this.state = State.isRunning;
+        this.storageService.clearStorage();
         this.onStartCounter();
+        this.state = State.isRunning;
         this.storeLocalTime(localTime);
         this.laps = [];
         break;
-        case Actions.pause:
-          this.state = State.isPaused;
-          this.onPauseCounter();
-          this.storePauseTime(this.seconds);
-          break;
-          case Actions.resume:
-            this.state = State.isRunning;
-            this.onStartCounter();
-            this.storeLocalTime(localTime);
-            break;
-            case Actions.stop:
-              this.state = State.isStopped;
-              this.seconds = 0;
-              this.onPauseCounter();
-              this.storageService.clearStorage();
-              break;
-              default:
-                this.state = State.isStopped;
-                this.seconds = 0;
-                this.laps = [];
-              break;
+      case Actions.pause:
+        this.state = State.isPaused;
+        this.onPauseCounter();
+        this.storePauseTime(this.timeRef);
+        break;
+      case Actions.resume:
+        this.state = State.isRunning;
+        this.onStartCounter();
+        this.storeLocalTime(localTime);
+        break;
+      case Actions.stop:
+        this.state = State.isStopped;
+        this.timeRef = 0;
+        this.onPauseCounter();
+        break;
+      default:
+        this.state = State.isStopped;
+        this.timeRef = 0;
+        this.laps = [];
+        break;
     }
   }
   // ADD LAPS
   addLap() {
     if (this.laps.length < 1) {
-      return this.laps.push(this.seconds);
+      const newLap = this.laps.push(this.timeRef);
+      this.storeLaps(this.laps);
+      return newLap;
     }
-    let sumOfLaps = (previousValue: number, currentValue: number) => previousValue + currentValue;
-    let currentLap = this.seconds - this.laps.reduce(sumOfLaps);
-    return this.laps.push(currentLap);
+    const sumOfLaps = (previousValue: number, currentValue: number) => previousValue + currentValue;
+    const currentLap = this.timeRef - this.laps.reduce(sumOfLaps);
+    const newLap = this.laps.push(currentLap);
+    this.storeLaps(this.laps);
+    return newLap;
   }
 
   // STORE STATES
@@ -128,5 +142,8 @@ export class ControlService {
   }
   storePauseTime(pauseTime: number) {
     this.storageService.pauseTimeToStorage(pauseTime);
+  }
+  storeLaps(laps: number[]) {
+    this.storageService.lapsToStorage(laps);
   }
 }

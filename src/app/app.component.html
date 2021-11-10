@@ -1,6 +1,5 @@
 <div class="container">
   <h1 class="main-title">Welcome to <span>stopwatch</span></h1>
-
     <section class="stopwatch">
       <div class="stopwatch__screen">{{ time }}</div>
       <ul class="stopwatch__controls">
@@ -35,8 +34,8 @@
       </ul>
         <ul class="stopwatch__laps">
         <li class="stopwatch__lap"
-        *ngFor="let lap of laps">
-        <p>{{ displayLap(lap) }}</p>
+        *ngFor="let lap of laps; let i = index">
+        <span>lap </span> {{ i + 1 }} is: {{ displayLap(lap) }}
       </li>
     </ul>
     </section>

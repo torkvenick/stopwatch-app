@@ -52,17 +52,24 @@
 
   &__laps {
     list-style-type: none;
-    font-size: 18px;
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: -15px;
+    font-size: 22px;
+    text-align: center;
   }
 
   &__lap {
     min-width: 40px;
-    margin: 0 5px 5px;
+    display: block;
+    margin: 0 5px 5px -30px;
     padding: 0 5px;
     line-height: 1;
-    border: 1px solid black;
+    border-bottom: 2px solid black;
+
+    span {
+      font-size: 26px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-style: italic;
+      color: rgb(35, 3, 95);
+    }
   }
 }
