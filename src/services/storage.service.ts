@@ -6,7 +6,7 @@ export class StorageService {
 
   storedState: string = 'storedState';
   storedLocalTime: string = 'storedLocalTime';
-  storedPauseLocalTime: string = 'storedPauseLocalTime';
+  storedPauseTime: string = 'storedPauseTime';
   storedLaps: string = 'storedLaps';
 
 
@@ -38,19 +38,18 @@ export class StorageService {
     return result;
   }
   clearStorage() {
-    localStorage.removeItem(this.storedState);
     localStorage.removeItem(this.storedLocalTime);
-    localStorage.removeItem(this.storedPauseLocalTime);
+    localStorage.removeItem(this.storedPauseTime);
     localStorage.removeItem(this.storedLaps);
   }
 
   pauseTimeToStorage(pauseTime: number) {
     const pausedTime: string = JSON.stringify(pauseTime);
-    localStorage.setItem(this.storedPauseLocalTime, pausedTime);
+    localStorage.setItem(this.storedPauseTime, pausedTime);
   }
 
   pauseTimeToData() {
-    const pauseTime = localStorage.getItem(this.storedPauseLocalTime);
+    const pauseTime = localStorage.getItem(this.storedPauseTime);
     if (pauseTime === null) {
       return null;
     }
@@ -66,53 +65,9 @@ export class StorageService {
   lapsToData() {
     const savedLap = localStorage.getItem(this.storedLaps);
     if (savedLap === null) {
-      return null;
+      return [];
     }
     const result = JSON.parse(savedLap);
     return result;
   }
 }
-
-/*  startLocalTimeToStorage(time: number) {
-   const storedStartLocalTime: string = JSON.stringify(time);
-   localStorage.setItem(this.storedStartLocalTime, storedStartLocalTime);
- }
-
- startLocalTimeToData() {
-   const savedStartLocalTime = localStorage.getItem(this.storedState);
-   if (savedStartLocalTime === null) {
-     return null;
-   }
-   const result = JSON.parse(savedStartLocalTime);
-   return result;
- }
- //====================================================
-
- pauseLocalTimeToStorage(time: number) {
-   const storedPauseLocalTime: string = JSON.stringify(time);
-   localStorage.setItem(this.storedPauseLocalTime, storedPauseLocalTime);
- }
-
- pauseLocalTimeToData() {
-   const savedPauseLocalTime = localStorage.getItem(this.storedState);
-   if (savedPauseLocalTime === null) {
-     return null;
-   }
-   const result = JSON.parse(savedPauseLocalTime);
-   return result;
- }
- //====================================================
-
- resumeLocalTimeToStorage(time: number) {
-   const storedResumeLocalTime: string = JSON.stringify(time);
-   localStorage.setItem(this.storedResumeLocalTime, storedResumeLocalTime);
- }
-
- resumeLocalTimeToData() {
-   const savedResumeLocalTime = localStorage.getItem(this.storedState);
-   if (savedResumeLocalTime === null) {
-     return null;
-   }
-   const result = JSON.parse(savedResumeLocalTime);
-   return result;
- } */

@@ -6,12 +6,12 @@ import { Actions, State } from './../app/state.model';
 @Injectable()
 export class ControlService {
 
-  private timeRef: number = 0;
-  // timRef gets the moment of the start of my stopwatch. I need to convert this time into seconds. I need to create a method which converts time to seconds since the time is passed to other methods or whatever...
-  // 
+
   private intervalRef: any;
   private state: State = State.isStopped;
+  private pauseTime: number = this.storageService.pauseTimeToData();
 
+  private timeRef!: number;
 
   private laps: number[] = [];
 
@@ -35,17 +35,18 @@ export class ControlService {
     const storedLaps: number[] = this.storageService.lapsToData();
     this.laps = storedLaps;
     if (storedState === State.isRunning) {
-      const currentLocalTime: number = new Date().getTime();
-      const storedLocalTime: number = this.storageService.timeToData();
-      const pauseLocalTime: number = this.storageService.pauseTimeToData();
-      const neededTime = (currentLocalTime - storedLocalTime) / 1000 + pauseLocalTime;
-      this.timeRef = neededTime;
       this.state = State.isRunning;
+      const startLocalTime = this.storageService.timeToData() - this.pauseTime * 1000;
+      const currentLocalTime = new Date().getTime();
+      this.timeRef = (currentLocalTime - startLocalTime) / 1000;
       this.onStartCounter();
+      
     } else if (storedState === State.isPaused) {
-      this.timeRef = this.storageService.pauseTimeToData();
+      this.timeRef = this.pauseTime;
       this.state = State.isPaused;
+      
     } else {
+      this.timeRef = 0;
       return;
     }
   }
@@ -54,32 +55,32 @@ export class ControlService {
   secondsToDisplayedTime(seconds: number) {
     const displayedHours = this.addLeadingZero(Math.floor(seconds / 3600));
     const displayedMinutes = this.addLeadingZero(Math.floor(seconds / 60 % 60));
-    const displayedSeconds = this.addLeadingZero(Math.floor(seconds % 60));
+    const displayedSeconds = this.addLeadingZero((Math.floor(seconds % 60 * 100) / 100),2);
     const time = displayedHours + ':' + displayedMinutes + ':' + displayedSeconds;
     return time;
   }
 
-  addLeadingZero(timeValue: number) {
+  addLeadingZero(timeValue: number, fixedDecimal: number = 0) {
     if (timeValue < 10) {
-      return '0' + timeValue;
+      return '0' + timeValue.toFixed(fixedDecimal);
     } else {
-      return timeValue.toString();
+      return timeValue.toFixed(fixedDecimal);
     }
   }
 
-  startLocalTime!: number;
   // COUNTER CONTROLS
   onStartCounter() {
     if (this.intervalRef) {
       return;
-    }  
-      this.startLocalTime = new Date().getTime();
+    }
+    this.pauseTime = this.storageService.pauseTimeToData();
+    //this.timeRef = this.storageService.timeToData() - this.pauseTime * 1000;
+    const startLocalTime = this.storageService.timeToData() - this.pauseTime * 1000;
     this.intervalRef = setInterval(() => {
       const currentLocalTime = new Date().getTime();
-      return this.timeRef = Math.floor((currentLocalTime - this.startLocalTime) / 1000);
-    }, 1000);
+      return this.timeRef = (currentLocalTime - startLocalTime) / 1000;
+    }, 10);
   }
-
   onPauseCounter() {
     clearInterval(this.intervalRef);
     this.intervalRef = undefined;
@@ -92,20 +93,20 @@ export class ControlService {
     switch (action) {
       case Actions.start:
         this.storageService.clearStorage();
-        this.onStartCounter();
         this.state = State.isRunning;
         this.storeLocalTime(localTime);
+        this.onStartCounter();
         this.laps = [];
         break;
       case Actions.pause:
         this.state = State.isPaused;
-        this.onPauseCounter();
         this.storePauseTime(this.timeRef);
+        this.onPauseCounter();
         break;
       case Actions.resume:
         this.state = State.isRunning;
-        this.onStartCounter();
         this.storeLocalTime(localTime);
+        this.onStartCounter();
         break;
       case Actions.stop:
         this.state = State.isStopped;
